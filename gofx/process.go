@@ -8,20 +8,19 @@ func Process() {
 	defer dbMap.Db.Close()
 
 	for order := range orderChan {
-		// Get possible transactions
+		// Get matching orders
 		var matchingOrders []Order
-
 		if order.Buy {
 			dbMap.Select(
 				&matchingOrders,
-				"select * from orders where Security=? and Buy=0 and Price < ? order by ts",
+				"select * from orders where security=? and buy=0 and price < ? order by timestamp",
 				order.Security,
 				order.Price,
 			)
 		} else {
 			dbMap.Select(
 				&matchingOrders,
-				"select * from orders where Security=? and Buy=1 and Price > ? order by ts",
+				"select * from orders where security=? and buy=1 and price > ? order by timestamp",
 				order.Security,
 				order.Price,
 			)
@@ -37,6 +36,7 @@ func Process() {
 			// Apply deductions to matching
 			matchingOrder.Quantity -= amountToDeduct
 			order.Quantity -= amountToDeduct
+
 			if matchingOrder.Quantity == 0 {
 				dbMap.Delete(&matchingOrder)
 			} else {

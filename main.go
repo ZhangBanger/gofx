@@ -20,6 +20,7 @@ func main() {
 
 	r := gin.Default()
 	r.POST("/orders", CreateOrder)
+	r.GET("/orders", GetBook)
 
 	r.Run(":8080")
 }

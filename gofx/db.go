@@ -2,11 +2,11 @@ package gofx
 
 import (
 	"database/sql"
-	"github.com/coopernurse/gorp"
+	"github.com/jmoiron/modl"
 	"log"
 )
 
-var dbMap *gorp.DbMap
+var dbMap *modl.DbMap
 
 func InitDb() {
 	// Connect DB
@@ -15,9 +15,8 @@ func InitDb() {
 	checkErr(err, "SQL Connection failed")
 
 	// Get db map, register and create table
-	dbMap = &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
-	dbMap.AddTableWithName(Order{}, "orders").SetKeys(false, "ts")
-	dbMap.AddTableWithName(Account{}, "accounts").SetKeys(false, "id")
+	dbMap = modl.NewDbMap(db, modl.MySQLDialect{"InnoDB", "UTF8"})
+	dbMap.AddTableWithName(Order{}, "orders").SetKeys(false, "Timestamp")
 	err = dbMap.CreateTablesIfNotExists()
 	checkErr(err, "Table Creation failed")
 }

@@ -6,9 +6,9 @@ import (
 )
 
 type Order struct {
-	Timestamp int64   `db:"ts" json:"ts"`
-	User      string  `json:"user" binding:"required" db:"user"`
-	Security  string  `json:"security" binding:"required" db:"security"`
+	Timestamp int64   `json:"ts"`
+	User      string  `json:"user" binding:"required"`
+	Security  string  `json:"security" binding:"required"`
 	Buy       bool    `json:"buy"`
 	Quantity  uint32  `json:"quantity" binding:"required"`
 	Price     float64 `json:"price" binding:"required"`
@@ -30,4 +30,12 @@ func CreateOrder(c *gin.Context) {
 	} else {
 		c.JSON(400, gin.H{"status": "invalid fields"})
 	}
+}
+
+func GetBook(c *gin.Context) {
+	var orders []Order
+
+	dbMap.Select(&orders, "select * from orders")
+
+	c.JSON(200, gin.H{"book": orders})
 }
